@@ -22,7 +22,7 @@
     <target name="libs" depends="simple, stanford" description="Download and compile all required 3rd party libraries." />
 
     <target name="simple">
-        <get src="http://downloads.sourceforge.net/project/simpleweb/simpleweb/5.1.6/simple-5.1.6.zip" dest="simple-5.1.6.zip" />
+        <get src="https://ayera.dl.sourceforge.net/project/simpleweb/simpleweb/5.1.6/simple-5.1.6.zip" dest="simple-5.1.6.zip" />
         <unzip src="simple-5.1.6.zip" dest="." />
         <ant dir="simple-5.1.6" target="build" />
         <move file="simple-5.1.6/jar/simple-5.1.6.jar" todir="${lib.dir}" />
@@ -31,7 +31,7 @@
     </target>
 
     <target name="stanford">
-        <get src="http://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip" dest="stanford-corenlp-full-2018-10-05.zip" />
+        <get src="https://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip" dest="stanford-corenlp-full-2018-10-05.zip" />
         <unzip src="stanford-corenlp-full-2018-10-05.zip" dest="." />
         <move todir="${lib.dir}">
             <fileset dir="stanford-corenlp-full-2018-10-05">
