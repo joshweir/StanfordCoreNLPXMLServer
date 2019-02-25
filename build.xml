@@ -9,7 +9,8 @@
     <property name="main-class"  value="StanfordCoreNLPXMLServer"/>
     <property name="port"  value="8080"/>
     <property name="annotators"  value="tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment"/>
-    <property name="maxmemory"  value="1024m"/>
+    <property name="maxmemory"  value="2048m"/>
+    <property name="parse.model" value="edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz" />
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -21,8 +22,17 @@
 
     <target name="libs" depends="simple, stanford" description="Download and compile all required 3rd party libraries." />
 
-    <target name="simple">
+    <target name="simple" depends="simple_dl, simple_install" />
+
+    <target name="simple_dl" depends="check-simple-dl-exists" unless="simpledl.present">
         <get src="https://ayera.dl.sourceforge.net/project/simpleweb/simpleweb/5.1.6/simple-5.1.6.zip" dest="simple-5.1.6.zip" />
+    </target> 
+
+    <target name="check-simple-dl-exists">
+        <available file="simple-5.1.6.zip" property="simpledl.present"/>
+    </target>
+
+    <target name="simple_install">
         <unzip src="simple-5.1.6.zip" dest="." />
         <ant dir="simple-5.1.6" target="build" />
         <move file="simple-5.1.6/jar/simple-5.1.6.jar" todir="${lib.dir}" />
@@ -30,8 +40,17 @@
         <delete file="simple-5.1.6.zip" />
     </target>
 
-    <target name="stanford">
+    <target name="stanford" depends="stanford_dl, stanford_install" />
+
+    <target name="stanford_dl" depends="check-stanford-dl-exists" unless="stanforddl.present">
         <get src="https://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip" dest="stanford-corenlp-full-2018-10-05.zip" />
+    </target> 
+
+    <target name="check-stanford-dl-exists">
+        <available file="stanford-corenlp-full-2018-10-05.zip" property="stanforddl.present"/>
+    </target>
+
+    <target name="stanford_install">
         <unzip src="stanford-corenlp-full-2018-10-05.zip" dest="." />
         <move todir="${lib.dir}">
             <fileset dir="stanford-corenlp-full-2018-10-05">
@@ -40,6 +59,16 @@
         </move>
         <delete dir="stanford-corenlp-full-2018-10-05" />
         <delete file="stanford-corenlp-full-2018-10-05.zip" />
+        <exec executable="/bin/sh">
+          <arg value="-c" />
+          <arg value="pwd" />
+        </exec>
+        <!-- move custom model jars also to the lib dir -->
+        <move todir="${lib.dir}">
+            <fileset dir="/src">
+                <include name="*.jar" />
+            </fileset>
+        </move>
     </target>
 
     <target name="compile">
@@ -57,10 +86,12 @@
         </jar>
     </target>
 
-    <target name="run" depends="jar">
+    <!-- depends="jar" -->
+    <target name="run">
         <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" maxmemory="${maxmemory}">
             <arg value="${port}" />
             <arg value="${annotators}" />
+            <arg value="${parse.model}" />
         </java>
     </target>
 
@@ -68,6 +99,7 @@
         <java jar="${jar.dir}/${ant.project.name}.jar" fork="true" timeout="30000" maxmemory="${maxmemory}">
             <arg value="${port}" />
             <arg value="${annotators}" />
+            <arg value="${parse.model}" />
         </java>
     </target>
 </project>

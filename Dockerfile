@@ -1,5 +1,4 @@
 FROM ubuntu
-MAINTAINER Michael De Lorenzo "michael@delorenzodesign.com"
 
 RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
 RUN echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections
@@ -25,6 +24,10 @@ WORKDIR /src
 COPY ./ /src
 
 RUN ant libs
+
 RUN ant jar
+
+RUN rm -rf /src/stanford-corenlp-full-2018-10-05.zip
+RUN rm -rf /src/stanford-srparser-2014-10-23-models.jar
 
 CMD ant run -Dport=19350

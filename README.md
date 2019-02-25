@@ -89,30 +89,74 @@ Note you can olso try this [online](http://nlp.stanford.edu:8080/corenlp/process
 
 ## Installation
 
-1. Clone the repository:
+Either Docker or standalone installation:
 
-        git clone https://github.com/michaeldelorenzo/StanfordCoreNLPXMLServer.git
+Firstly, clone the repository:
 
-2. Download and install the third party libraries:
+        git clone https://github.com/joshweir/StanfordCoreNLPXMLServer.git
+
+Optionally: 
+
+Copy any of the following to the root of the project directory to be automatically included in the build:
+* stanford corenlp server archive file available here: https://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip (this avoids having to re-download the archive every time the docker image is built).
+* copy model `.jar` files to the root of the project directory to be automatically included in the build. For example to include the shift reduce parser model download it here: https://nlp.stanford.edu/software/stanford-srparser-2014-10-23-models.jar
+
+Then complete either Docker installation or Standalone installation below.
+
+### Docker Installation 
+
+1. Build:
+
+        docker build -t stanfordcorenlpxmlserver .
+
+2. Run:
+
+        docker run --rm -p 19350:19350 stanfordcorenlpxmlserver \
+          ant run -Dmaxmemory=4g -Dport=19350 -Dannotators="tokenize, ssplit, pos, lemma, ner, parse, coref, natlog, openie" 
+
+Or, Run specifying a `parse.model` you have included in step 1 above:
+
+        docker run --rm -p 19350:19350 stanfordcorenlpxmlserver \
+          ant run -Dmaxmemory=4g -Dport=19350 \
+          -Dannotators="tokenize, ssplit, pos, lemma, ner, parse, coref, natlog, openie" \
+          -Dparse.model="edu/stanford/nlp/models/srparser/englishSR.ser.gz"
+
+Once server is listening, make a request:
+
+        curl -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
+          --data 'text=Hello world!' http://localhost:19350
+
+3. Optionally, push:
+
+        docker push joshweir/stanfordcorenlpxmlserver
+
+Then run image prefixed with repo name:
+
+        docker run --rm -p 19350:19350 joshweir/stanfordcorenlpxmlserver \
+          ant run -Dmaxmemory=4g -Dport=19350 -Dannotators="tokenize, ssplit, pos, lemma, ner, parse, coref, natlog, openie"
+
+### Standalone Installation
+
+1. Download and install the third party libraries:
 
         cd StanfordCoreNLPXMLServer
         ant libs
 
-3. Compile the JAR file:
+2. Compile the JAR file:
 
         ant jar
 
-4. Run the server:
+3. Run the server:
 
         ant run
 
-5. The server is now waiting on <http://localhost:8080> for HTTP POST requests. Note the initialization can take a few minutes, because several modules and resources of Stanford CoreNLP need to be loaded.
+4. The server is now waiting on <http://localhost:8080> for HTTP POST requests. Note the initialization can take a few minutes, because several modules and resources of Stanford CoreNLP need to be loaded.
 
     You can also choose a port:
 
         ant run -Dport=9000
 
-## Prerequisites
+## Prerequisites (for Standalone Installation)
 
 - [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html) or [OpenJDK](http://openjdk.java.net/install/) version 6 or later
 - [Apache Ant](http://ant.apache.org)

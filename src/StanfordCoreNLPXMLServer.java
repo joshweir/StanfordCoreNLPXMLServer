@@ -43,6 +43,8 @@ public class StanfordCoreNLPXMLServer implements Container {
     private static int port = 8080;
     private static String annotators =
       "tokenize, ssplit, pos, lemma, ner, parse, dcoref, sentiment";
+    private static String parseModel =
+      "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
     private static final Logger log =
       Logger.getLogger( StanfordCoreNLPXMLServer.class.getName() );
     private static int total_requests = 0;
@@ -84,16 +86,19 @@ public class StanfordCoreNLPXMLServer implements Container {
         // use port and annotators if given
         try {
             port = Integer.parseInt(args[0]);
-            annotators = !args[1].isEmpty() ?
-              args[1].trim() : annotators;
         } catch(Exception e) {
             // silently keep port at 8080
         }
+        annotators = !args[1].isEmpty() ?
+            args[1].trim() : parseModel;
+        parseModel = !args[2].isEmpty() ?
+            args[2].trim() : parseModel;
 
         // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER,
         // parsing, coreference resolution, and sentiment
         Properties defaultProperties = new Properties();
         defaultProperties.put("annotators", annotators);
+        defaultProperties.put("parse.model", parseModel);
         
         // initialize the Stanford Core NLP
         pipeline = new StanfordCoreNLP(defaultProperties);
