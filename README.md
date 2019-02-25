@@ -128,7 +128,7 @@ Once server is listening, make a request:
 
 3. Optionally, push:
 
-        docker push joshweir/stanfordcorenlpxmlserver
+        docker push joshweir/stanfordcorenlpxmlserver:latest
 
 Then run image prefixed with repo name:
 
