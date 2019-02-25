@@ -40,7 +40,7 @@
         <delete file="simple-5.1.6.zip" />
     </target>
 
-    <target name="stanford" depends="stanford_dl, stanford_install" />
+    <target name="stanford" depends="stanford_dl, stanford_sr_dl, stanford_install" />
 
     <target name="stanford_dl" depends="check-stanford-dl-exists" unless="stanforddl.present">
         <get src="https://nlp.stanford.edu/software/stanford-corenlp-full-2018-10-05.zip" dest="stanford-corenlp-full-2018-10-05.zip" />
@@ -48,6 +48,14 @@
 
     <target name="check-stanford-dl-exists">
         <available file="stanford-corenlp-full-2018-10-05.zip" property="stanforddl.present"/>
+    </target>
+
+    <target name="stanford_sr_dl" depends="check-stanford-sr-dl-exists" unless="stanfordsrdl.present">
+        <get src="https://nlp.stanford.edu/software/stanford-srparser-2014-10-23-models.jar" dest="stanford-srparser-2014-10-23-models.jar" />
+    </target> 
+
+    <target name="check-stanford-sr-dl-exists">
+        <available file="stanford-srparser-2014-10-23-models.jar" property="stanfordsrdl.present"/>
     </target>
 
     <target name="stanford_install">
